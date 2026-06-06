@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>美国国债与ETF实操框架</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#121c2d; --panel2:#17233a; --ink:#eef5ff; --muted:#aebbd0;
+    --gold:#e6c16a; --green:#55d19a; --red:#ff7b7b; --blue:#6fb6ff; --line:#2b3a55;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(circle at top left,#1b3154 0,#0b1220 38%,#070b13 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.62}
+  .wrap{max-width:1180px;margin:auto;padding:34px 22px 70px}
+  header{padding:34px 28px;border:1px solid var(--line);border-radius:28px;background:linear-gradient(135deg,rgba(23,35,58,.95),rgba(13,21,36,.95));box-shadow:0 22px 60px rgba(0,0,0,.28)}
+  h1{font-size:38px;line-height:1.18;margin:0 0 12px;letter-spacing:.5px}
+  h2{font-size:25px;margin:42px 0 16px;border-left:5px solid var(--gold);padding-left:12px}
+  h3{font-size:19px;margin:20px 0 10px;color:#fff}
+  p{margin:8px 0;color:var(--muted)}
+  .subtitle{font-size:18px;color:#dce8f7;max-width:900px}
+  .tagrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .tag{border:1px solid rgba(230,193,106,.42);color:#ffe4a3;background:rgba(230,193,106,.08);padding:6px 12px;border-radius:999px;font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{background:rgba(18,28,45,.9);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 12px 34px rgba(0,0,0,.18)}
+  .span4{grid-column:span 4}.span6{grid-column:span 6}.span8{grid-column:span 8}.span12{grid-column:span 12}
+  .big{font-size:28px;font-weight:800;color:#fff}.small{font-size:13px;color:var(--muted)}
+  .pill{display:inline-block;font-size:12px;border-radius:999px;padding:3px 9px;margin-right:6px;margin-bottom:6px;background:#22324e;color:#dbe9ff;border:1px solid #334867}
+  table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:16px;border:1px solid var(--line);background:rgba(10,16,27,.45);font-size:14px}
+  th,td{padding:12px 11px;border-bottom:1px solid var(--line);vertical-align:top} th{background:#1a2942;color:#fff;text-align:left;font-weight:700} tr:last-child td{border-bottom:0}
+  .num{font-variant-numeric:tabular-nums;color:#fff;font-weight:700}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.node{padding:10px 13px;border-radius:14px;background:#15233a;border:1px solid #314461;color:#ecf5ff}.arrow{color:var(--gold);font-weight:800}
+  .note{border-left:4px solid var(--blue);padding:12px 14px;background:rgba(111,182,255,.08);border-radius:12px;color:#cbd9ed}
+  .warn{border-left:4px solid var(--red);padding:12px 14px;background:rgba(255,123,123,.08);border-radius:12px;color:#f1c8c8}
+  .formula{font-size:18px;color:#fff;background:#0d1626;border:1px dashed #49607f;border-radius:16px;padding:14px 16px;margin:12px 0}
+  a{color:#8fc7ff;text-decoration:none}.footer{margin-top:34px;color:#8b9bb3;font-size:12px}
+  @media(max-width:860px){.span4,.span6,.span8{grid-column:span 12}h1{font-size:30px}table{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>美国国债与美债ETF：一份能实操的框架</h1>
+    <p class="subtitle">先搞清楚“期限”和“久期”，再决定是做现金管理、锁定利率、押注降息，还是防通胀。美债不是一个东西，而是一整条从1个月到30年的利率曲线。</p>
+    <div class="tagrow">
+      <span class="tag">T-Bills 短债</span><span class="tag">2年期看美联储</span><span class="tag">10年期看定价锚</span><span class="tag">长债押注降息</span><span class="tag">ETF有波动</span>
+    </div>
+  </header>
+
+  <h2>一、美国国债有哪些种类？</h2>
+  <div class="grid">
+    <div class="card span12">
+      <table>
+        <thead><tr><th>类别</th><th>中文</th><th>常见期限</th><th>付息方式</th><th>核心用途</th><th>注意点</th></tr></thead>
+        <tbody>
+          <tr><td><b>T-Bills</b></td><td>短期国库券</td><td>4周、8周、13周、17周、26周、52周</td><td>折价发行，到期按面值兑付</td><td>美元现金管理、低波动</td><td>到期快，再投资收益会随利率变化</td></tr>
+          <tr><td><b>Treasury Notes</b></td><td>中期国债</td><td>2年、3年、5年、7年、10年</td><td>每半年付息</td><td>锁定中期收益、温和降息交易</td><td>期限越长，对利率越敏感</td></tr>
+          <tr><td><b>Treasury Bonds</b></td><td>长期国债</td><td>20年、30年</td><td>每半年付息</td><td>押注长期利率下行</td><td>价格波动大，收益率上行会明显亏损</td></tr>
+          <tr><td><b>TIPS</b></td><td>通胀保护债</td><td>5年、10年、30年</td><td>本金随CPI调整，每半年付息</td><td>防通胀、配置真实利率</td><td>真实利率上升时，价格也会跌</td></tr>
+          <tr><td><b>FRNs</b></td><td>浮动利率国债</td><td>2年</td><td>每季度付息，利率随短债变化</td><td>降低利率波动风险</td><td>降息周期中票息会随之下降</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2>二、现行收益率：看哪几个关键点？</h2>
+  <div class="grid">
+    <div class="card span8">
+      <h3>美国国债收益率曲线</h3>
+      <table>
+        <thead><tr><th>期限</th><th>收益率</th><th>通常代表什么</th></tr></thead>
+        <tbody>
+          <tr><td>1个月</td><td class="num">3.72%</td><td>美元现金利率、短端流动性</td></tr>
+          <tr><td>3个月</td><td class="num">3.68%</td><td>短债现金管理基准</td></tr>
+          <tr><td>6个月</td><td class="num">3.78%</td><td>半年期无风险收益</td></tr>
+          <tr><td>1年</td><td class="num">3.83%</td><td>近一年政策利率预期</td></tr>
+          <tr><td>2年</td><td class="num">4.08%</td><td><b>最敏感反映美联储政策路径</b></td></tr>
+          <tr><td>5年</td><td class="num">4.25%</td><td>中期增长和降息预期</td></tr>
+          <tr><td>10年</td><td class="num">4.57%</td><td><b>全球资产定价锚：美股、黄金、房贷都看它</b></td></tr>
+          <tr><td>20年</td><td class="num">5.09%</td><td>长期财政、通胀和供给压力</td></tr>
+          <tr><td>30年</td><td class="num">5.10%</td><td>超长期利率和财政可持续性</td></tr>
+        </tbody>
+      </table>
+      <p class="small">注：收益率为2026年5月下旬附近的公开市场数据，用于学习框架。实际交易前应重新查询。</p>
+    </div>
+    <div class="card span4">
+      <h3>最重要的三个期限</h3>
+      <p><span class="pill">2年期</span>看美联储加息/降息预期。</p>
+      <p><span class="pill">10年期</span>看美股估值、黄金、美元、全球资产的利率锚。</p>
+      <p><span class="pill">30年期</span>看长期通胀、财政赤字、国债供给压力。</p>
+      <div class="formula">债券价格 ↑ ⇔ 收益率 ↓<br/>债券价格 ↓ ⇔ 收益率 ↑</div>
+      <p class="note">美联储降息通常压低短端收益率，但长端收益率不一定下降；如果市场担心通胀、赤字和发债压力，10年/30年收益率仍可能上升。</p>
+    </div>
+  </div>
+
+  <h2>三、相关美债ETF怎么分类？</h2>
+  <div class="card span12">
+    <table>
+      <thead><tr><th>类型</th><th>代表ETF</th><th>主要持仓期限</th><th>适合场景</th><th>利率敏感度</th><th>简单理解</th></tr></thead>
+      <tbody>
+        <tr><td><b>超短债/现金管理</b></td><td><span class="gold">SGOV</span>、BIL、TBIL、USFR</td><td>0—3个月；USFR偏浮息</td><td>美元闲钱、低波动、替代现金</td><td class="green">很低</td><td>更像“美元余额宝/货币基金思路”</td></tr>
+        <tr><td><b>1—3年短债</b></td><td><span class="gold">SHY</span>、VGSH、SCHO</td><td>1—3年</td><td>想比现金略锁久一点，但不想大波动</td><td class="green">低</td><td>稳健短债</td></tr>
+        <tr><td><b>3—7年中短债</b></td><td><span class="gold">IEI</span>、VGIT、SCHR</td><td>3—7年</td><td>温和押注未来降息</td><td class="blue">中等</td><td>收益和弹性折中</td></tr>
+        <tr><td><b>7—10年中长债</b></td><td><span class="gold">IEF</span>、UST</td><td>7—10年</td><td>看10年期收益率下行</td><td class="blue">中高</td><td>更接近“10年期美债交易”</td></tr>
+        <tr><td><b>长期国债</b></td><td><span class="gold">TLT</span>、VGLT、SPTL</td><td>20年以上或长期国债</td><td>强烈押注长期利率下降、经济走弱</td><td class="red">高</td><td>收益率每变动一点，价格波动很大</td></tr>
+        <tr><td><b>超长零息债</b></td><td><span class="gold">ZROZ</span>、EDV</td><td>长期STRIPS/零息债</td><td>极致押注长端利率下降</td><td class="red">极高</td><td>债券里的“高弹性工具”，不适合保守现金管理</td></tr>
+        <tr><td><b>TIPS通胀保护</b></td><td><span class="gold">TIP</span>、SCHP、VTIP、STIP</td><td>TIPS；VTIP/STIP偏短久期</td><td>担心通胀反复，想配置真实利率</td><td class="blue">视久期而定</td><td>防通胀，但不是不会跌</td></tr>
+        <tr><td><b>期限到期型ETF</b></td><td><span class="gold">iBonds Treasury</span>系列：IBTE、IBTF、IBTG等</td><td>按目标年份到期</td><td>想做债券梯子，又不想自己买单只债</td><td>随剩余期限下降</td><td>更接近“ETF版债券梯子”</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>四、常见ETF怎么用？</h2>
+  <div class="grid">
+    <div class="card span4">
+      <div class="big">1</div><h3>放美元现金</h3>
+      <p><b>工具：</b>SGOV、BIL、TBIL、USFR</p>
+      <p><b>逻辑：</b>久期很短，主要赚短端利息，价格波动小。</p>
+      <p class="warn">风险：降息后再投资收益下降；ETF价格仍可能有小幅波动。</p>
+    </div>
+    <div class="card span4">
+      <div class="big">2</div><h3>稳健锁定利率</h3>
+      <p><b>工具：</b>SHY、VGSH、IEI、VGIT</p>
+      <p><b>逻辑：</b>既想获得票息，又希望未来降息带来一点价格上涨。</p>
+      <p class="warn">风险：如果市场继续上调利率预期，中短债也会跌。</p>
+    </div>
+    <div class="card span4">
+      <div class="big">3</div><h3>押注降息/衰退交易</h3>
+      <p><b>工具：</b>IEF、TLT、VGLT、ZROZ、EDV</p>
+      <p><b>逻辑：</b>收益率下降，长债价格上涨；久期越长，弹性越大。</p>
+      <p class="warn">风险：长端收益率如果继续上升，亏损会比短债大得多。</p>
+    </div>
+  </div>
+
+  <h2>五、怎么从“判断”映射到“工具”？</h2>
+  <div class="card span12">
+    <table>
+      <thead><tr><th>你的判断/需求</th><th>更匹配的工具</th><th>不太适合</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td>我只是想放美元闲钱</td><td>SGOV、BIL、TBIL、USFR</td><td>TLT、ZROZ</td><td>现金管理重视低波动，不应承担长债久期风险</td></tr>
+        <tr><td>我认为美联储未来会降息，但不想太刺激</td><td>SHY、VGSH、IEI、VGIT</td><td>ZROZ</td><td>中短债能受益于降息预期，但波动相对可控</td></tr>
+        <tr><td>我认为经济会明显走弱，10年期收益率会下行</td><td>IEF、7—10年美债ETF</td><td>纯短债</td><td>10年期对经济和长期利率预期更敏感</td></tr>
+        <tr><td>我强烈看多长债，认为长端利率会大幅下降</td><td>TLT、VGLT、SPTL；激进者看ZROZ/EDV</td><td>SGOV</td><td>长久期工具价格弹性大</td></tr>
+        <tr><td>我担心通胀卷土重来</td><td>TIP、SCHP、VTIP、STIP</td><td>纯名义长债</td><td>TIPS本金随CPI调整，更关注真实利率</td></tr>
+        <tr><td>我不想判断利率方向</td><td>分批买短中债，或用到期型ETF做梯子</td><td>满仓单一长债ETF</td><td>分散期限，降低一次性押错方向的风险</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>六、几个关键概念必须分清</h2>
+  <div class="grid">
+    <div class="card span6">
+      <h3>1）收益率 ≠ 你一定拿到的收益</h3>
+      <p>如果买单只国债并持有到期，收益相对明确；但美债ETF是滚动持仓，净值会随利率变化波动。</p>
+      <div class="flow"><span class="node">收益率上升</span><span class="arrow">→</span><span class="node">债券价格下跌</span><span class="arrow">→</span><span class="node">长债ETF跌得更明显</span></div>
+    </div>
+    <div class="card span6">
+      <h3>2）短债ETF ≠ 长债ETF</h3>
+      <p>SGOV/BIL偏现金管理；TLT/ZROZ偏利率交易。它们都叫美债ETF，但风险属性完全不同。</p>
+      <div class="flow"><span class="node">短债</span><span class="arrow">低波动</span><span class="node">中债</span><span class="arrow">适中</span><span class="node">长债</span><span class="arrow">高弹性</span></div>
+    </div>
+    <div class="card span6">
+      <h3>3）久期越长，利率敏感度越高</h3>
+      <p>粗略理解：久期越长，收益率变化对价格的影响越大。长债ETF不是“稳稳拿利息”，而是带有明显交易属性。</p>
+    </div>
+    <div class="card span6">
+      <h3>4）降息不等于长债一定涨</h3>
+      <p>短端通常受美联储影响更直接；长端还看通胀预期、财政赤字、国债供给、期限溢价。如果这些因素推高长端利率，长债仍可能下跌。</p>
+    </div>
+  </div>
+
+  <h2>七、一个普通投资者的组合思路</h2>
+  <div class="card span12">
+    <table>
+      <thead><tr><th>组合风格</th><th>可能配置</th><th>适合人群</th><th>核心风险</th></tr></thead>
+      <tbody>
+        <tr><td>保守现金型</td><td>80% 超短债ETF + 20% 1—3年短债ETF</td><td>只想管好美元现金</td><td>降息后收益率下降</td></tr>
+        <tr><td>稳健债券型</td><td>40% 超短债 + 40% 1—3年短债 + 20% 3—7年中债</td><td>想要票息，也接受小波动</td><td>利率上行导致净值回撤</td></tr>
+        <tr><td>降息交易型</td><td>30% 短债 + 30% 中债 + 40% 7—20年以上长债</td><td>认为未来会明显降息</td><td>长端收益率继续上行</td></tr>
+        <tr><td>激进长债型</td><td>TLT/VGLT + 少量ZROZ/EDV</td><td>强烈判断长期利率会大幅下行</td><td>波动大，可能阶段性回撤很深</td></tr>
+      </tbody>
+    </table>
+    <p class="small">以上只是学习示例，不构成投资建议。实际配置还要考虑你的币种、账户、税务、风险承受能力和投资期限。</p>
+  </div>
+
+  <h2>八、最终记忆版</h2>
+  <div class="grid">
+    <div class="card span4"><h3>现金管理</h3><p class="big">SGOV / BIL</p><p>看短端利率，追求低波动。</p></div>
+    <div class="card span4"><h3>稳健降息交易</h3><p class="big">SHY / IEI</p><p>短中久期，弹性适中。</p></div>
+    <div class="card span4"><h3>强降息交易</h3><p class="big">TLT / ZROZ</p><p>长久期，高弹性，高波动。</p></div>
+  </div>
+
+  <div class="footer">
+    <p>数据与资料来源：U.S. Department of the Treasury 利率统计、FRED / Federal Reserve H.15、TreasuryDirect、BlackRock iShares、Vanguard、PIMCO 等公开资料。收益率和ETF参数会变化，交易前请查看最新官网数据。</p>
+  </div>
+</div>
+</body>
+</html>
