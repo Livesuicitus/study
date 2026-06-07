@@ -17,7 +17,7 @@
   --red: #ff6978;
   --shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
   --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
-  --radius: 10px;
+  --radius: 12px;
 }
 
 body.light {
